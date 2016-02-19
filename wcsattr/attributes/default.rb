@@ -1,13 +1,13 @@
 
-default['updi']['wcs']['version']	=	'7009'
-default['updi']['wcs']['home']		=	'/usr/opt/app/IBM/updi_wcs'
-default['updi']['wcs']['user']		=	'wcadmin'
+default['updi']['wcs']['version']	=	'7008'
+default['updi']['wcs']['home']		=	'/export/home/webadmin/IBM/updi_wcs'
+default['updi']['wcs']['user']		=	'webadmin'
 
 default['updi']['was']['version']	=	'37'
-default['updi']['was']['home']		=	'/usr/opt/app/IBM/updi_was'
-default['updi']['was']['user']		=	'wcadmin'
+default['updi']['was']['home']		=	'/export/home/webadmin/IBM/updi_was'
+default['updi']['was']['user']		=	'webadmin'
 
-default['repository']			=	'/usr/opt/app/IBM/media'
+default['repository']			=	'/export/home/webadmin/IBM/media'
 
 default['wcupgrade']['user'] = 'wcadmin'
 default['wcupgrade']['group'] = 'wctest'
