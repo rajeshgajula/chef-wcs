@@ -15,6 +15,12 @@ action :install do
         raise "installation directory was not provided" if new_resource.updiHome.nil?
 
 	updiUser = node['updi']['wcs']['user']
+	
+	distrib = "new_resource.repository/download.updii.new_resource.updiVersion.linux.amd64.zip"
+	zipfile distrib do
+		into	"new_resource.repository/updi_wcs_src"
+		action	:extract
+	end
 
         install_command = "echo updiUser new_resource.repository new_resource.updiVersion new_resource.updiHome"
         raise "Invalid charachters found in install_command. Valid charachters are a-z, A-Z, 0-9, '-', '\\' and whitespace" unless install_command =~ /[0-9|a-z|A-Z|\s|\\|\-]*/
