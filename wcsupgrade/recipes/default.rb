@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: wcupgrade
+# Cookbook Name:: wcsupgrade
 # Recipe:: default
 #
 # Copyright 2016, YOUR_COMPANY_NAME

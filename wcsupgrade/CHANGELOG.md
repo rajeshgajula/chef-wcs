@@ -1,11 +1,11 @@
-wcupgrade CHANGELOG
+wcsupgrade CHANGELOG
 ===================
 
-This file is used to list changes made in each version of the wcupgrade cookbook.
+This file is used to list changes made in each version of the wcsupgrade cookbook.
 
 0.1.0
 -----
-- [your_name] - Initial release of wcupgrade
+- [your_name] - Initial release of wcsupgrade
 
 - - -
 Check the [Markdown Syntax Guide](http://daringfireball.net/projects/markdown/syntax) for help with Markdown.

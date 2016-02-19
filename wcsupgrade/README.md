@@ -1,4 +1,4 @@
-wcupgrade Cookbook
+wcsupgrade Cookbook
 ==================
 TODO: Enter the cookbook description here.
 
@@ -11,14 +11,14 @@ TODO: List your cookbook requirements. Be sure to include any requirements this 
 
 e.g.
 #### packages
-- `toaster` - wcupgrade needs toaster to brown your bagel.
+- `toaster` - wcsupgrade needs toaster to brown your bagel.
 
 Attributes
 ----------
 TODO: List your cookbook attributes here.
 
 e.g.
-#### wcupgrade::default
+#### wcsupgrade::default
 <table>
   <tr>
     <th>Key</th>
@@ -27,7 +27,7 @@ e.g.
     <th>Default</th>
   </tr>
   <tr>
-    <td><tt>['wcupgrade']['bacon']</tt></td>
+    <td><tt>['wcsupgrade']['bacon']</tt></td>
     <td>Boolean</td>
     <td>whether to include bacon</td>
     <td><tt>true</tt></td>
@@ -36,17 +36,17 @@ e.g.
 
 Usage
 -----
-#### wcupgrade::default
+#### wcsupgrade::default
 TODO: Write usage instructions for each cookbook.
 
 e.g.
-Just include `wcupgrade` in your node's `run_list`:
+Just include `wcsupgrade` in your node's `run_list`:
 
 ```json
 {
   "name":"my_node",
   "run_list": [
-    "recipe[wcupgrade]"
+    "recipe[wcsupgrade]"
   ]
 }
 ```
