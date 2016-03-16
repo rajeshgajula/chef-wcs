@@ -27,7 +27,7 @@ action :prepare do
 
 	distrib = "#{new_resource.repository}/#{new_resource.distribPattern}"
 	execute 'unzip' do
-		command	"unzip -q #{distrib} #{new_resource.repository}/#{distrTmp}"
+		command	"unzip -q #{distrib} -d #{new_resource.repository}/#{distrTmp}"
 		cwd	new_resource.repository
 		not_if	{ Dir.exists?("#{new_resource.repository}/#{distrTmp}") }
 	end
