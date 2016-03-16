@@ -24,17 +24,12 @@ action :prepare do
 	raise "updi distribPattern was not provided" if new_resource.distribPattern.nil?
         raise "product owner user was not provided" if new_resource.productUser.nil?
         raise "product owner group was not provided" if new_resource.productGroup.nil?
+        raise "tmp folder #{new_resource.repository}/#{distrTmp} already exists" if Dir.exists?("#{new_resource.repository}/#{distrTmp}")
 
-	distrib = "#{new_resource.repository}/#{new_resource.distribPattern}"
 	execute 'unzip' do
-		command	"unzip -q #{distrib} -d #{new_resource.repository}/#{distrTmp}"
+		command	"unzip -q #{new_resource.repository}/#{new_resource.distribPattern} -d #{new_resource.repository}/#{distrTmp}"
 		cwd	new_resource.repository
-		not_if	{ Dir.exists?("#{new_resource.repository}/#{distrTmp}") }
 	end
-	#zipfile distrib do
-	#	into	"#{new_resource.repository}/#{distrTmp}"
-	#	action	:extract
-	#end
 
 	directory "#{new_resource.repository}/#{distrTmp}" do
 		mode		0755
