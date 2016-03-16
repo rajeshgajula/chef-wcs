@@ -26,10 +26,15 @@ action :prepare do
         raise "product owner group was not provided" if new_resource.productGroup.nil?
 
 	distrib = "#{new_resource.repository}/#{new_resource.distribPattern}"
-	zipfile distrib do
-		into	"#{new_resource.repository}/#{distrTmp}"
-		action	:extract
+	execute 'unzip' do
+		command	"unzip -q distrib #{new_resource.repository}/#{distrTmp}"
+		cwd	new_resource.repository
+		not_if	{ Dir.exists?("#{new_resource.repository}/#{distrTmp}") }
 	end
+	#zipfile distrib do
+	#	into	"#{new_resource.repository}/#{distrTmp}"
+	#	action	:extract
+	#end
 
 	directory "#{new_resource.repository}/#{distrTmp}" do
 		mode		0755
