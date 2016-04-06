@@ -4,7 +4,7 @@ attribute :updiHome,		:kind_of => String,     :default => nil
 attribute :productHome,		:kind_of => String,     :default => nil
 attribute :productUser,		:kind_of => String,     :default => nil
 attribute :productGroup,	:kind_of => String,     :default => nil
-attribute :distribList,		:kind_of => String,     :default => nil
+attribute :distribList,		:kind_of => Array,      :default => nil
 attribute :logFile,		:kind_of => String,     :default => "/tmp/iim.log"
 
 distrTmp = "updi_src_tmp"
@@ -13,7 +13,6 @@ distrTmp = "updi_src_tmp"
 actions :prepare
 actions :clean
 actions :install
-actions :prepare_for_apar
 actions :update_product
 actions :version
 default_action :install
@@ -70,16 +69,6 @@ action :install do
 end
 
 
-action :prepare_for_apar do
-	raise "product home directory was not provided" if new_resource.productHome.nil?
-
-	execute 'check_if_product_running' do
-		command	"ps -aux | grep #{new_resource.productHome} | grep -v 'grep'"
-		returns	1
-	end
-end
-
-
 action :update_product do
         raise "updi home directory was not provided" if new_resource.updiHome.nil?
         raise "product home directory was not provided" if new_resource.productHome.nil?
@@ -87,7 +76,18 @@ action :update_product do
         raise "product owner group was not provided" if new_resource.productGroup.nil?
         raise "distrib lists was not provided" if new_resource.distribList.nil?
 
-	install_command = "#{new_resource.updiHome}/update.sh -OPT checkFilePermissions='true' -W maintenance.package='#{new_resource.distribList}' -W product.location='#{new_resource.productHome}' -W update.type='install' -silent"
+	distribs = ""
+	distribList.each do |distrib|
+		distribs << "#{distrib};"
+		raise "#{distrib} not exists" unless ::File.exists?(distrib)
+	end
+
+	execute 'check_if_product_running' do
+		command	"ps aux | grep #{new_resource.productHome} | grep -v 'grep'"
+		returns	1
+	end
+
+	install_command = "echo #{new_resource.updiHome}/update.sh -OPT checkFilePermissions='true' -W maintenance.package='#{distribs}' -W product.location='#{new_resource.productHome}' -W update.type='install' -silent"
 	raise "Invalid charachters found in install_command. Valid charachters are a-z, A-Z, 0-9, '-', '\\' and whitespace" unless install_command =~ /[0-9|a-z|A-Z|\s|\\|\-]*/
 
 	doit = Mixlib::ShellOut.new(install_command, :user => new_resource.productUser, :group => new_resource.productGroup, :cwd => new_resource.updiHome)
@@ -103,7 +103,7 @@ action :version do
         raise "product home directory was not provided" if new_resource.productHome.nil?
         raise "product owner user was not provided" if new_resource.productUser.nil?
 
-	install_command = "#{new_resource.productHome}/bin/versionInfo.sh"
+	install_command = "#{new_resource.productHome}/bin/versionInfo.sh |egrep 'Name|Version  '"
 
 	doit = Mixlib::ShellOut.new(install_command, :user => new_resource.productUser, :cwd => new_resource.productHome)
 	puts " " + doit.stdout
