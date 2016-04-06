@@ -1,0 +1,62 @@
+#!/bin/bash
+
+# Source function library.
+. /lib/lsb/init-functions
+
+USAGE="$0 (start | stop | restart | startAdmin | stopAdmin)"
+
+#********************************************************************************************#
+ADM="false"
+
+IHS_HOME="<%= node['ihs']['home'] %>"
+
+IHS_INFO=(
+<% @node['ihs']['conf'].each do |ihs_conf| %>
+	${IHS_HOME}/conf/<%= ihs_conf %>
+<% end %>
+)
+#********************************************************************************************#
+start_adm() {
+	if [[ $ADM == "true" ]]; then
+	    MSG="Starting Adminctl"
+	    echo ${IHS_HOME}/bin/adminctl start && log_success_msg $MSG \
+	    || log_failure_msg $MSG
+	fi
+}
+
+stop_adm() {
+	if [[ $ADM == "true" ]]; then
+	    MSG="Stopping Adminctl"
+	    echo ${IHS_HOME}/bin/adminctl stop && log_success_msg $MSG \
+	    || log_failure_msg $MSG
+	fi
+}
+
+start_servers() {
+	for PROFILE in "${IHS_INFO[@]}" ; do
+	    MSG="Starting IHS for ${PROFILE}"
+	    echo ${IHS_HOME}/bin/apachectl -k start -f $PROFILE && log_success_msg $MSG \
+	    || log_failure_msg $MSG
+	done
+}
+
+stop_servers() {
+	for PROFILE in "${IHS_INFO[@]}" ; do
+	    MSG="Stopping IHS for ${PROFILE}"
+	    echo ${IHS_HOME}/bin/apachectl -k stop -f $PROFILE && log_success_msg $MSG \
+	    || log_failure_msg $MSG
+	done
+}
+
+do_usage() {
+        echo $USAGE
+}
+
+case "$1" in
+        'start')	start_adm; start_servers;;
+        'stop')		stop_servers; stop_adm;;
+        'restart')	stop_servers; stop_adm; sleep 120; start_adm; start_servers;;
+        'startAdmin')	start_adm;;
+        'stopAdmin')	stop_adm;;
+        *)		do_usage;;
+esac
