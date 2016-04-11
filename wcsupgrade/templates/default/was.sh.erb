@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# Source function library.
+. /lib/lsb/init-functions
+
+USAGE="$0 (start | stop | restart | clean | startServer | stopServer | startNode | stopNode | startDMGR | stopDMGR)"
+
+#********************************************************************************************#
+DMGR="<%= node['dmgr']['enabled'] %>"
+DMGR_PROFILE="<%= node['dmgr']['profile'] %>"
+
+NODEAGENT="<%= node['was']['managed'] %>"
+
+WAS_HOME="<%= node['was']['home'] %>"
+
+WAS_INFO=(
+	<% @node['was']['conf'].each do |was_conf| %>
+		<%= was_conf %>
+	<% end %>
+)
+#********************************************************************************************#
+start_dmgr() {
+	if [[ $DMGR == "true" ]]; then
+	    MSG="Starting DMGR"
+	    echo ${WAS_HOME}/profiles/${DMGR_PROFILE}/bin/startManager.sh && log_success_msg $MSG \
+	    || log_failure_msg $MSG
+	fi
+}
+
+stop_dmgr() {
+	if [[ $DMGR == "true" ]]; then
+	    MSG="Stopping DMGR"
+	    echo ${WAS_HOME}/profiles/${DMGR_PROFILE}/bin/startManager.sh && log_success_msg $MSG \
+	    || log_failure_msg $MSG
+	fi
+}
+
+start_nodeagent() {
+        if [[ $NODEAGENT == "true" ]]; then
+	  for INFO in "${WAS_INFO[@]}" ; do
+		PROFILE="${INFO%%:*}"
+		MSG="Starting Node Agent for ${PROFILE}"
+		   echo ${WAS_HOME}/profiles/${PROFILE}/bin/startNode.sh && log_success_msg $MSG \
+		   || log_failure_msg $MSG
+	  done
+	fi
+}
+
+stop_nodeagent() {
+        if [[ $NODEAGENT == "true" ]]; then
+	  for INFO in "${WAS_INFO[@]}" ; do
+		PROFILE="${INFO%%:*}"
+		MSG="Stopping Node Agent for ${PROFILE}"
+		echo ${WAS_HOME}/profiles/${PROFILE}/bin/stopNode.sh && log_success_msg $MSG \
+		|| log_failure_msg $MSG
+	  done
+	fi
+}
+
+start_appservers() {
+	for INFO in "${WAS_INFO[@]}" ; do
+	    PROFILE="${INFO%%:*}"
+	    SNAME="${INFO##*:}"
+	    MSG="Starting ${SNAME} for ${PROFILE}"
+	    echo ${WAS_HOME}/profiles/${PROFILE}/bin/startServer.sh $SNAME && log_success_msg $MSG \
+	    || log_failure_msg $MSG
+	done
+}
+
+stop_appservers() {
+	for INFO in "${WAS_INFO[@]}" ; do
+	    PROFILE="${INFO%%:*}"
+	    SNAME="${INFO##*:}"
+	    MSG="Stopping ${SNAME} for ${PROFILE}"
+	    echo ${WAS_HOME}/profiles/${PROFILE}/bin/stopServer.sh $SNAME && log_success_msg $MSG \
+	    || log_failure_msg $MSG
+	done
+}
+
+do_clean() {
+	for INFO in "${WAS_INFO[@]}" ; do
+	    PROFILE="${INFO%%:*}"
+	    echo "cd ${WAS_HOME}/profiles/${PROFILE} && rm -rf ./temp/* ./wstemp/*"
+	done
+}
+
+do_usage() {
+        echo $USAGE
+}
+
+case "$1" in
+        'start')	start_dmgr; start_nodeagent; start_appservers;;
+        'stop')		stop_appservers; stop_nodeagent; stop_dmgr;;
+        'restart')	stop_appservers; stop_nodeagent; sleep 120; start_nodeagent; start_appservers;;
+        'startServer')	start_appservers;;
+        'stopServer')	stop_appservers;;
+        'startNode')	start_nodeagent;;
+        'stopNode')	stop_nodeagent;;
+        'startDMGR')	start_dmgr;;
+        'stopDMGR')	stop_dmgr;;
+        'clean')	do_clean;;
+        *)		do_usage;;
+esac

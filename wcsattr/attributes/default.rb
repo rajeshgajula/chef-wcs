@@ -16,6 +16,11 @@ default['was']['fp_version']            =       '7.0.0.39'
 default['was']['home']                  =       '/usr/opt/app/IBM/WebSphere/AppServer'
 default['was']['user']                  =       'wcadmin'
 default['was']['group']                 =       'wctest'
+default['was']['managed']		=	'true'
+default['was']['conf']			=	['test01:server1']
+
+default['dmgr']['enabled']		=	'false'
+default['dmgr']['profile']		=	'Dmgr01'
 
 default['ihs']['fp_version']            =       '7.0.0.39'
 default['ihs']['home']                  =       '/usr/opt/app/HTTPServer'
