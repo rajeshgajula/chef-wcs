@@ -34,9 +34,9 @@ distrib_list = []
   end
 end
 
-#3. check 25GB free space
+#3. check 20GB free space
 wcsupgrade_utils 'opt-free-space before backup' do
-	spaceLimitGB	25
+	spaceLimitGB	20
         action		:check_free_space
 end
 

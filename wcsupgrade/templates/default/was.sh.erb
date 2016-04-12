@@ -6,6 +6,8 @@
 USAGE="$0 (start | stop | restart | clean | startServer | stopServer | startNode | stopNode | startDMGR | stopDMGR)"
 
 #********************************************************************************************#
+older_than_days=30
+
 DMGR="<%= node['dmgr']['enabled'] %>"
 DMGR_PROFILE="<%= node['dmgr']['profile'] %>"
 
@@ -30,7 +32,7 @@ start_dmgr() {
 stop_dmgr() {
 	if [[ $DMGR == "true" ]]; then
 	    MSG="Stopping DMGR"
-	    echo ${WAS_HOME}/profiles/${DMGR_PROFILE}/bin/startManager.sh && log_success_msg $MSG \
+	    echo ${WAS_HOME}/profiles/${DMGR_PROFILE}/bin/stopManager.sh && log_success_msg $MSG \
 	    || log_failure_msg $MSG
 	fi
 }
@@ -72,7 +74,7 @@ stop_appservers() {
 	    PROFILE="${INFO%%:*}"
 	    SNAME="${INFO##*:}"
 	    MSG="Stopping ${SNAME} for ${PROFILE}"
-	    echo ${WAS_HOME}/profiles/${PROFILE}/bin/stopServer.sh $SNAME && log_success_msg $MSG \
+	    echo ${WAS_HOME}/profiles/${PROFILE}/bin/stopServer.sh $SNAME && ( log_success_msg $MSG; do_logrotate ${WAS_HOME}/profiles/${PROFILE}/logs/${SNAME} ) \
 	    || log_failure_msg $MSG
 	done
 }
@@ -84,6 +86,46 @@ do_clean() {
 	done
 }
 
+do_logrotate() {
+   if test -d ${1}/../bklogs
+   then
+          echo ""
+      echo "-------------------------------------------------------"
+          echo "Archive Log Files...."
+          echo ""
+      DATE=`date +"%Y%m%d%H%M%S"`
+      ARCHIVESTATUS="0"
+      TEMPDIR=`pwd`
+      TARFILE=`echo ${1} | awk -F"/" '{ print $NF; }'`.${DATE}.tar
+      cd ${1}/../bklogs
+      tar -cvf ../bklogs/${TARFILE} ${1}
+      if (( $? != 0 ))
+      then
+        ARCHIVESTATUS="1"
+      fi
+      gzip ${TARFILE}
+      if (( $? != 0 ))
+      then
+        ARCHIVESTATUS="1"
+      fi
+      if [[ ${ARCHIVESTATUS} == "0" ]]
+      then
+             echo rm -rf ${1}
+             mkdir -p ${1}
+      fi
+      echo ""
+      echo "Check files older than ${older_than_days} days"
+      echo "-------------------------------------------------------"
+      find . -mtime +$older_than_days -name "*.gz" -exec ls -l {} \;
+      echo "-------------------------------------------------------"
+      echo ""
+      find . -mtime +$older_than_days -name "*.gz" -exec rm {} \; > /dev/null
+      cd ${TEMPDIR}
+   else
+      echo "Please configure the log directory for rotation ."
+   fi
+}
+
 do_usage() {
         echo $USAGE
 }
@@ -91,7 +133,8 @@ do_usage() {
 case "$1" in
         'start')	start_dmgr; start_nodeagent; start_appservers;;
         'stop')		stop_appservers; stop_nodeagent; stop_dmgr;;
-        'restart')	stop_appservers; stop_nodeagent; sleep 120; start_nodeagent; start_appservers;;
+        'restart')	stop_appservers; stop_nodeagent; sleep 60; start_nodeagent; start_appservers;;
+        'cleanRestart')	stop_appservers; stop_nodeagent; do_clean; sleep 60; start_nodeagent; start_appservers;;
         'startServer')	start_appservers;;
         'stopServer')	stop_appservers;;
         'startNode')	start_nodeagent;;
