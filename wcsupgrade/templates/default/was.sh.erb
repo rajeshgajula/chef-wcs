@@ -24,7 +24,7 @@ WAS_INFO=(
 start_dmgr() {
 	if [[ $DMGR == "true" ]]; then
 	    MSG="Starting DMGR"
-	    echo ${WAS_HOME}/profiles/${DMGR_PROFILE}/bin/startManager.sh && log_success_msg $MSG \
+	    ${WAS_HOME}/profiles/${DMGR_PROFILE}/bin/startManager.sh && log_success_msg $MSG \
 	    || log_failure_msg $MSG
 	fi
 }
@@ -32,7 +32,7 @@ start_dmgr() {
 stop_dmgr() {
 	if [[ $DMGR == "true" ]]; then
 	    MSG="Stopping DMGR"
-	    echo ${WAS_HOME}/profiles/${DMGR_PROFILE}/bin/stopManager.sh && log_success_msg $MSG \
+	    ${WAS_HOME}/profiles/${DMGR_PROFILE}/bin/stopManager.sh && log_success_msg $MSG \
 	    || log_failure_msg $MSG
 	fi
 }
@@ -42,7 +42,7 @@ start_nodeagent() {
 	  for INFO in "${WAS_INFO[@]}" ; do
 		PROFILE="${INFO%%:*}"
 		MSG="Starting Node Agent for ${PROFILE}"
-		   echo ${WAS_HOME}/profiles/${PROFILE}/bin/startNode.sh && log_success_msg $MSG \
+		   ${WAS_HOME}/profiles/${PROFILE}/bin/startNode.sh && log_success_msg $MSG \
 		   || log_failure_msg $MSG
 	  done
 	fi
@@ -53,7 +53,7 @@ stop_nodeagent() {
 	  for INFO in "${WAS_INFO[@]}" ; do
 		PROFILE="${INFO%%:*}"
 		MSG="Stopping Node Agent for ${PROFILE}"
-		echo ${WAS_HOME}/profiles/${PROFILE}/bin/stopNode.sh && log_success_msg $MSG \
+		${WAS_HOME}/profiles/${PROFILE}/bin/stopNode.sh && log_success_msg $MSG \
 		|| log_failure_msg $MSG
 	  done
 	fi
@@ -64,7 +64,7 @@ start_appservers() {
 	    PROFILE="${INFO%%:*}"
 	    SNAME="${INFO##*:}"
 	    MSG="Starting ${SNAME} for ${PROFILE}"
-	    echo ${WAS_HOME}/profiles/${PROFILE}/bin/startServer.sh $SNAME && log_success_msg $MSG \
+	    ${WAS_HOME}/profiles/${PROFILE}/bin/startServer.sh $SNAME && log_success_msg $MSG \
 	    || log_failure_msg $MSG
 	done
 }
@@ -74,7 +74,7 @@ stop_appservers() {
 	    PROFILE="${INFO%%:*}"
 	    SNAME="${INFO##*:}"
 	    MSG="Stopping ${SNAME} for ${PROFILE}"
-	    echo ${WAS_HOME}/profiles/${PROFILE}/bin/stopServer.sh $SNAME && ( log_success_msg $MSG; do_logrotate ${WAS_HOME}/profiles/${PROFILE}/logs/${SNAME} ) \
+	    ${WAS_HOME}/profiles/${PROFILE}/bin/stopServer.sh $SNAME && ( log_success_msg $MSG; do_logrotate ${WAS_HOME}/profiles/${PROFILE}/logs/${SNAME} ) \
 	    || log_failure_msg $MSG
 	done
 }
@@ -82,7 +82,7 @@ stop_appservers() {
 do_clean() {
 	for INFO in "${WAS_INFO[@]}" ; do
 	    PROFILE="${INFO%%:*}"
-	    echo "cd ${WAS_HOME}/profiles/${PROFILE} && rm -rf ./temp/* ./wstemp/*"
+	    cd ${WAS_HOME}/profiles/${PROFILE} && rm -rf ./temp/* ./wstemp/*
 	done
 }
 
@@ -132,7 +132,7 @@ do_usage() {
 
 case "$1" in
         'start')	start_dmgr; start_nodeagent; start_appservers;;
-        'stop')		stop_appservers; stop_nodeagent; stop_dmgr;;
+        'stop')		stop_appservers; stop_nodeagent; stop_dmgr; sleep 30;;
         'restart')	stop_appservers; stop_nodeagent; sleep 60; start_nodeagent; start_appservers;;
         'cleanRestart')	stop_appservers; stop_nodeagent; do_clean; sleep 60; start_nodeagent; start_appservers;;
         'startServer')	start_appservers;;

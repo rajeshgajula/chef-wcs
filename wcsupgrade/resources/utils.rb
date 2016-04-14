@@ -13,6 +13,7 @@ attribute :logFile,		:kind_of => String,     :default => "/tmp/iim.log"
 
 
 actions :check_free_space
+actions :check_if_running
 actions :execit
 actions :version
 default_action :version
@@ -41,6 +42,7 @@ action :execit do
         doit.error!
 end
 
+
 action :backup do
 	raise "product home directory was not provided" if new_resource.productHome.nil?
 	raise "product owner user was not provided" if new_resource.productUser.nil?
@@ -56,6 +58,16 @@ action :backup do
 		group	new_resource.productGroup
         end
 
+end
+
+
+action :check_if_running do
+	raise "product home directory was not provided" if new_resource.productHome.nil?
+
+	execute 'check_if_product_running' do
+		command "ps aux | grep -v 'grep' | grep #{new_resource.productHome}"
+		returns 1
+	end
 end
 
 

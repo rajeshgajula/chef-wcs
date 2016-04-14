@@ -34,9 +34,9 @@ distrib_list = []
   end
 end
 
-#3. check 10GB free space
+#3. check 15GB free space
 wcsupgrade_utils 'opt-free-space before backup' do
-	spaceLimitGB	10
+	spaceLimitGB	15
         action		:check_free_space
 end
 
@@ -47,6 +47,12 @@ wcsupgrade_utils 'stop-ihs' do
 	productUser	'root'
 	productGroup	'root'
 	action		:execit
+end
+
+#4.1. check if all stopped
+wcsupgrade_utils 'check running' do
+	productHome     node['ihs']['home']
+	action          :check_if_running
 end
 
 #5. do backup
@@ -61,8 +67,8 @@ end
 
 #6. check 10GB free space
 wcsupgrade_utils 'opt-free-space after backup' do
-        spaceLimitGB    10
-        action          :check_free_space
+	spaceLimitGB    10
+	action          :check_free_space
 end
 
 #7.1. update ihs if no instances and if distribs are in place
@@ -73,7 +79,6 @@ wcsupgrade_updi 'update ihs' do
 	productGroup	'root'
 	distribList	distrib_list
 	action		:update_product
-
 end
 
 #7.2. update plg if no instances and if distribs are in place
@@ -84,7 +89,6 @@ wcsupgrade_updi 'update plg' do
 	productGroup	'root'
 	distribList	distrib_list
 	action		:update_product
-
 end
 
 #8. start instances

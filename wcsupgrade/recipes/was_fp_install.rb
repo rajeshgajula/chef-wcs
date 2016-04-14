@@ -36,7 +36,7 @@ end
 
 #3. check 20GB free space
 wcsupgrade_utils 'opt-free-space before backup' do
-	spaceLimitGB	20
+	spaceLimitGB	15
         action		:check_free_space
 end
 
@@ -49,6 +49,12 @@ wcsupgrade_utils 'stop-was' do
 	action		:execit
 end
 
+#4.1. check if all stopped
+wcsupgrade_utils 'check running' do
+	productHome	node['was']['home']
+	action		:check_if_running
+end
+
 #5. do backup
 wcsupgrade_utils 'backup-was' do
 	productHome	node['was']['home']
@@ -59,13 +65,13 @@ wcsupgrade_utils 'backup-was' do
 	action		:backup
 end
 
-#6. check 15GB free space
+#6. check 20GB free space
 wcsupgrade_utils 'opt-free-space after backup' do
-        spaceLimitGB    15
-        action          :check_free_space
+	spaceLimitGB    20
+	action          :check_free_space
 end
 
-#7. update was if no instances and if distribs are in place
+#7. update was 
 wcsupgrade_updi 'update was' do
 	updiHome	node['updi']['was']['home']
 	productHome	node['was']['home']
@@ -76,7 +82,16 @@ wcsupgrade_updi 'update was' do
 
 end
 
-#8. start instances
+#8.1 clean temp folders
+wcsupgrade_utils 'clean-was' do
+	productHome	'/usr/opt/app/IBM/scripts'
+	execScript	'/usr/opt/app/IBM/scripts/was.sh clean'
+	productUser	node['was']['user']
+	productGroup	node['was']['group']
+	action		:execit
+end
+
+#8.2 start instances
 wcsupgrade_utils 'start-was' do
 	productHome	'/usr/opt/app/IBM/scripts'
 	execScript	'/usr/opt/app/IBM/scripts/was.sh start'

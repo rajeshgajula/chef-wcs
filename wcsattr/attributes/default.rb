@@ -4,7 +4,7 @@ default['updi']['wcs']['home']		=	'/usr/opt/app/IBM/WebSphere/wcs_updi'
 default['updi']['wcs']['user']		=	'wcadmin'
 default['updi']['wcs']['group']         =       'wctest'
 
-default['updi']['was']['version']	=	'7.0.0.39'
+default['updi']['was']['version']	=	'7.0.0.41'
 default['updi']['was']['home']		=	'/usr/opt/app/IBM/WebSphere/was_updi'
 default['updi']['was']['user']		=	'wcadmin'
 default['updi']['was']['group']         =       'wctest'
@@ -12,7 +12,7 @@ default['updi']['was']['group']         =       'wctest'
 default['repository']			=	'/usr/opt/app/IBM/media'
 default['backup']['folder']		=	'/usr/opt/app/backup'
 
-default['was']['fp_version']            =       '7.0.0.39'
+default['was']['fp_version']            =       '7.0.0.41'
 default['was']['home']                  =       '/usr/opt/app/IBM/WebSphere/AppServer'
 default['was']['user']                  =       'wcadmin'
 default['was']['group']                 =       'wctest'
@@ -22,11 +22,12 @@ default['was']['conf']			=	['test01:server1']
 default['dmgr']['enabled']		=	'false'
 default['dmgr']['profile']		=	'Dmgr01'
 
-default['ihs']['fp_version']            =       '7.0.0.39'
+default['ihs']['fp_version']            =       '7.0.0.41'
 default['ihs']['home']                  =       '/usr/opt/app/HTTPServer'
 default['ihs']['user']                  =       'wcadmin'
 default['ihs']['group']                 =       'wctest'
 default['ihs']['conf']			=	['mw.conf', 'ja.conf', 'jab.conf']
+default['ihs']['admin']			=	'false'
 
 default['plg']['fp_version']            =       '7.0.0.39'
 default['plg']['home']                  =       '/usr/opt/app/HTTPServer/Plugins'

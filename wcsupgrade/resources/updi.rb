@@ -82,12 +82,7 @@ action :update_product do
 		raise "#{distrib} not exists" unless ::File.exists?(distrib)
 	end
 
-	execute 'check_if_product_running' do
-		command	"ps aux | grep #{new_resource.productHome} | grep -v 'grep'"
-		returns	1
-	end
-
-	install_command = "echo #{new_resource.updiHome}/update.sh -OPT checkFilePermissions='true' -W maintenance.package='#{distribs}' -W product.location='#{new_resource.productHome}' -W update.type='install' -silent"
+	install_command = "#{new_resource.updiHome}/update.sh -OPT checkFilePermissions='true' -W maintenance.package='#{distribs}' -W product.location='#{new_resource.productHome}' -W update.type='install' -silent"
 	raise "Invalid charachters found in install_command. Valid charachters are a-z, A-Z, 0-9, '-', '\\' and whitespace" unless install_command =~ /[0-9|a-z|A-Z|\s|\\|\-]*/
 
 	doit = Mixlib::ShellOut.new(install_command, :user => new_resource.productUser, :group => new_resource.productGroup, :cwd => new_resource.updiHome)
