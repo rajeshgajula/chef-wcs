@@ -67,7 +67,7 @@ end
 
 #6. check 20GB free space
 wcsupgrade_utils 'opt-free-space after backup' do
-	spaceLimitGB    20
+	spaceLimitGB    10
 	action          :check_free_space
 end
 
